@@ -1,5 +1,22 @@
 <!DOCTYPE html>
-<script>
-  const id = new URLSearchParams(location.search).get("articleId");
-  window.location.href = `navercafe://cafe/28714369/${id}`;
-</script>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>머이봤 이동 페이지</title>
+  <script>
+    window.onload = function () {
+      const params = new URLSearchParams(window.location.search);
+      const articleId = params.get("articleId");
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (isMobile) {
+        window.location.href = `navercafe://cafe/28714369/${id}`;
+      } else {
+        window.location.href = `https://cafe.naver.com/f-e/cafes/28714369/articles/${articleId}?menuid=61&referrerAllArticles=false`;
+      }
+    };
+  </script>
+</head>
+<body>
+  <p>모바일은 팝업창에서 이동 눌러주세요!</p>
+</body>
+</html>
