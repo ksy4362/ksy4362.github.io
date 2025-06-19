@@ -9,7 +9,7 @@
       const articleId = params.get("articleId");
       const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
       if (isMobile) {
-        window.location.href = `navercafe://cafe/28714369/${id}`;
+        window.location.href = `navercafe://cafe/28714369/${articleId}`;
       } else {
         window.location.href = `https://cafe.naver.com/f-e/cafes/28714369/articles/${articleId}?menuid=61&referrerAllArticles=false`;
       }
