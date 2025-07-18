@@ -1,0 +1,193 @@
+<html>
+<head>
+    <title>숲 멀티뷰</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .resizable {
+      position: absolute;
+      border: 2px solid #007bff;
+      resize: both;
+      overflow: hidden;
+      min-width: 200px;
+      min-height: 150px;
+      box-sizing: border-box;
+    }
+
+    .resizable iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255,255,255,0.3);
+      z-index: 2;
+    }
+
+    .draggable {
+      cursor: move;
+    }
+
+    #editToggle {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 9999;
+      padding: 6px 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #chat {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 9999;
+      padding: 6px 12px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #chatbox {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: 300px;
+      height: 600px;
+      background: white;
+      border: 2px solid #007bff;
+      display: none; /* Initially hidden */
+      z-index: 9998;
+    }
+  </style>
+</head>
+<body>
+    <button id="editToggle">편집 모드 켜기</button>
+    <button id="chat">채팅 켜기</button>
+
+    <div id="box1" class="resizable">
+        <iframe src="https://play.sooplive.co.kr/collet11/direct?fromApi=1" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <div id="box2" class="resizable">
+        <iframe src="https://play.sooplive.co.kr/htvv2i/direct?fromApi=1" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div id="chatbox">
+        <iframe src="https://play.sooplive.co.kr/collet11?vtype=chat" frameborder="0" scrolling="no" id="chatbox"></iframe>
+        <iframe src="https://play.sooplive.co.kr/htvv2i?vtype=chat" frameborder="0" scrolling="no" id="chatbox"></iframe>
+    </div>
+<script>
+  const editButton = document.getElementById('editToggle');
+    const chatButton = document.getElementById('chat');
+  let isEditing = false;
+
+  const boxes = document.querySelectorAll('.resizable');
+
+  function enableEditMode() {
+    boxes.forEach(box => {
+      // 오버레이 추가
+      const overlay = document.createElement('div');
+      overlay.className = 'overlay draggable';
+      box.appendChild(overlay);
+
+      // 드래그 가능하게
+      makeDraggable(box, overlay);
+    });
+    editButton.textContent = '편집 모드 끄기';
+    isEditing = true;
+  }
+
+  function disableEditMode() {
+    boxes.forEach(box => {
+      const overlay = box.querySelector('.overlay');
+      if (overlay) box.removeChild(overlay);
+    });
+    editButton.textContent = '편집 모드 켜기';
+    isEditing = false;
+  }
+
+  editButton.addEventListener('click', () => {
+    if (isEditing) {
+      disableEditMode();
+    } else {
+      enableEditMode();
+    }
+  });
+  chatButton.addEventListener('click', () => {
+    const chatBox = document.getElementById('chatbox');
+    if (chatBox.style.display === 'none' || chatBox.style.display === '') {
+      chatBox.style.display = 'block';
+      chatButton.textContent = '채팅 끄기';
+
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://play.sooplive.co.kr/collet11/285920162?vtype=chat';
+      iframe.width = '300';
+      iframe.height = '600';
+      iframe.frameBorder = '0';
+      iframe.allowFullscreen = true;
+        chatBox.appendChild(iframe);
+    } else {
+      chatBox.style.display = 'none';
+      chatButton.textContent = '채팅 켜기';
+    }
+  });
+
+function bringToFront(box) {
+    // 현재 화면 내 가장 높은 z-index 찾기
+    let maxZ = 1;
+    document.querySelectorAll('.resizable').forEach(b => {
+        const z = parseInt(b.style.zIndex) || 1;
+        if (z > maxZ) maxZ = z;
+    });
+
+    box.style.zIndex = maxZ + 1;
+    }
+
+  function makeDraggable(box, handle) {
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    handle.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      isDragging = true;
+      offsetX = e.clientX - box.offsetLeft;
+      offsetY = e.clientY - box.offsetTop;
+      bringToFront(box);  // 맨 앞으로 이동
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (isDragging) {
+        box.style.left = `${e.clientX - offsetX}px`;
+        box.style.top = `${e.clientY - offsetY}px`;
+      }
+    });
+
+    document.addEventListener('mouseup', function() {
+      isDragging = false;
+    });
+  }
+  
+</script>
+</html>
